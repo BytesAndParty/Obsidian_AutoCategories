@@ -1,1 +1,21 @@
+# Mac
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Node
+node_modules/
+bun.lock
+
+# Build output
+main.js
+*.js.map
+
+# Reference vault
+Obsidian-Full-Vault/
+
+# IDE
+.idea/
+*.swp
+*.swo

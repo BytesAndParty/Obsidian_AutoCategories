@@ -1,0 +1,9 @@
+{
+  "id": "auto-categories",
+  "name": "Auto Categories",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Automatically creates category pages and base files when you add categories to frontmatter",
+  "author": "Robert Stickler",
+  "isDesktopOnly": false
+}

@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "node esbuild.config.mjs production"
+    "build": "node esbuild.config.mjs production",
+    "deploy": "node esbuild.config.mjs && mkdir -p /Users/robert.stickler/Development/Obsidian-Full-Vault/.obsidian/plugins/auto-categories && cp main.js manifest.json /Users/robert.stickler/Development/Obsidian-Full-Vault/.obsidian/plugins/auto-categories/"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",

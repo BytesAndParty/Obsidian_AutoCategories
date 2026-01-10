@@ -133,6 +133,15 @@ bun run build
 bun run deploy
 ```
 
+## Part of the BytesAndParty Plugin Suite
+
+This plugin works great alongside other plugins from the same author:
+
+- [Better Gitignore](https://github.com/BytesAndParty/BetterGitignore) - Beautiful .gitignore editor with templates
+- [Command Overview](https://github.com/BytesAndParty/CommandOverview) - Quick command palette with shortcuts
+- [Company Knowledge Hub](https://github.com/BytesAndParty/CompanyKnowledgeHub) - Publish notes to a shared knowledge base
+- [Customer Tag](https://github.com/BytesAndParty/CustomerTag) - Organize notes by customer tags
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.

@@ -741,20 +741,11 @@ class CategoriesOverviewModal extends Modal {
     );
     if (orphans.length > 0) {
       contentEl.createEl("h3", { text: "Orphan Categories (unused)" });
-      const orphanList = contentEl.createEl("ul");
+      const orphanList = contentEl.createEl("ul", { cls: "auto-categories-orphan-list" });
       for (const cat of orphans) {
         orphanList.createEl("li", { text: cat });
       }
     }
-
-    // Style
-    contentEl.createEl("style", {
-      text: `
-        .auto-categories-stats { margin-bottom: 1em; }
-        .auto-categories-stats p { margin: 0.25em 0; }
-        .auto-categories-warning { color: var(--text-error); margin-left: 0.5em; font-size: 0.85em; }
-      `,
-    });
   }
 
   onClose() {
@@ -784,13 +775,12 @@ class OrphanCategoriesModal extends Modal {
       text: `Found ${this.orphans.length} categories that are not used in any note:`,
     });
 
-    const list = contentEl.createEl("ul");
+    const list = contentEl.createEl("ul", { cls: "auto-categories-orphan-list" });
     for (const cat of this.orphans) {
-      const li = list.createEl("li");
+      const li = list.createEl("li", { cls: "auto-categories-orphan-item" });
       li.createEl("span", { text: cat });
 
       const deleteBtn = li.createEl("button", { text: "Delete" });
-      deleteBtn.style.marginLeft = "1em";
       deleteBtn.onclick = async () => {
         await this.plugin.deleteCategory(cat);
         li.remove();
@@ -805,8 +795,8 @@ class OrphanCategoriesModal extends Modal {
     if (this.orphans.length > 1) {
       const deleteAllBtn = contentEl.createEl("button", {
         text: "Delete All Orphans",
+        cls: "auto-categories-delete-all",
       });
-      deleteAllBtn.style.marginTop = "1em";
       deleteAllBtn.onclick = async () => {
         for (const cat of [...this.orphans]) {
           await this.plugin.deleteCategory(cat);

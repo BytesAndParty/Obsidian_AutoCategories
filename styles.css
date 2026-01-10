@@ -1,0 +1,43 @@
+/* Auto Categories - Modal Styles */
+
+/* Categories Overview Modal */
+.auto-categories-stats {
+  margin-bottom: var(--size-4-3);
+}
+
+.auto-categories-stats p {
+  margin: var(--size-4-1) 0;
+}
+
+.auto-categories-warning {
+  color: var(--text-error);
+  margin-left: var(--size-4-2);
+  font-size: var(--font-ui-smaller);
+}
+
+/* Orphan Categories Modal */
+.auto-categories-orphan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.auto-categories-orphan-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--size-4-2);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.auto-categories-orphan-item:last-child {
+  border-bottom: none;
+}
+
+.auto-categories-orphan-item button {
+  margin-left: var(--size-4-3);
+}
+
+.auto-categories-delete-all {
+  margin-top: var(--size-4-3);
+}

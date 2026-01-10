@@ -8,9 +8,7 @@ import {
   TFolder,
   MarkdownView,
   Modal,
-  debounce,
 } from "obsidian";
-import { EditorView, ViewUpdate } from "@codemirror/view";
 
 interface AutoCategoriesSettings {
   categoriesFolder: string;
@@ -75,8 +73,6 @@ const INVALID_CHARS = /[\\:*?"<>|]/g;
 
 export default class AutoCategoriesPlugin extends Plugin {
   settings: AutoCategoriesSettings = DEFAULT_SETTINGS;
-  private wasInCategories: boolean = false;
-  private lastFile: TFile | null = null;
 
   async onload() {
     await this.loadSettings();
@@ -117,12 +113,10 @@ export default class AutoCategoriesPlugin extends Plugin {
       callback: () => this.findOrphanCategories(),
     });
 
-    // Register editor extension to track cursor position
-    this.registerEditorExtension(
-      EditorView.updateListener.of((update: ViewUpdate) => {
-        if (update.selectionSet) {
-          this.handleCursorChange(update.view);
-        }
+    // Process file when metadata changes (frontmatter is parsed)
+    this.registerEvent(
+      this.app.metadataCache.on('changed', (file: TFile) => {
+        this.processFile(file);
       })
     );
 
@@ -156,80 +150,6 @@ export default class AutoCategoriesPlugin extends Plugin {
     if (this.settings.showNotifications) {
       new Notice(message);
     }
-  }
-
-  /**
-   * Handle cursor position changes - detect when leaving categories field
-   */
-  private handleCursorChange = debounce((view: EditorView) => {
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) return;
-
-    const file = activeView.file;
-    if (!file) return;
-
-    const cursor = view.state.selection.main.head;
-    const doc = view.state.doc.toString();
-
-    const isInCategories = this.isCursorInCategories(doc, cursor);
-
-    if (this.wasInCategories && !isInCategories && this.lastFile === file) {
-      this.processFile(file);
-    }
-
-    this.wasInCategories = isInCategories;
-    this.lastFile = file;
-  }, 100);
-
-  /**
-   * Check if cursor is within the categories frontmatter field
-   */
-  private isCursorInCategories(doc: string, cursorPos: number): boolean {
-    const lines = doc.split("\n");
-
-    if (lines[0] !== "---") return false;
-
-    let frontmatterEnd = -1;
-    let charCount = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-      if (i > 0 && lines[i] === "---") {
-        frontmatterEnd = i;
-        break;
-      }
-      charCount += lines[i].length + 1;
-    }
-
-    if (frontmatterEnd === -1) return false;
-
-    let categoriesStart = -1;
-    let categoriesEnd = -1;
-    let inCategories = false;
-    charCount = 0;
-
-    for (let i = 0; i <= frontmatterEnd; i++) {
-      const line = lines[i];
-      const lineStart = charCount;
-      const lineEnd = charCount + line.length;
-
-      if (line.match(/^categories:/)) {
-        categoriesStart = lineStart;
-        inCategories = true;
-      } else if (inCategories) {
-        if (line.match(/^\s+-\s/) || line.match(/^\s*$/)) {
-          categoriesEnd = lineEnd;
-        } else {
-          break;
-        }
-      }
-
-      charCount += line.length + 1;
-    }
-
-    if (categoriesStart === -1) return false;
-    if (categoriesEnd === -1) categoriesEnd = categoriesStart;
-
-    return cursorPos >= categoriesStart && cursorPos <= categoriesEnd + 1;
   }
 
   /**

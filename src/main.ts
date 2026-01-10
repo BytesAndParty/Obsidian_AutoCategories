@@ -329,6 +329,7 @@ export default class AutoCategoriesPlugin extends Plugin {
       const content = await this.app.vault.read(file);
       const lines = content.split("\n");
 
+      // Check for valid frontmatter start
       if (lines[0] !== "---") return;
 
       let frontmatterEnd = -1;
@@ -344,21 +345,59 @@ export default class AutoCategoriesPlugin extends Plugin {
       let inCategories = false;
       let categoriesStartLine = -1;
       let categoriesEndLine = -1;
+      let categoriesIndent = "";
 
       for (let i = 1; i < frontmatterEnd; i++) {
         const line = lines[i];
 
-        if (line.match(/^categories:\s*$/)) {
-          inCategories = true;
+        // Match "categories:" with optional trailing content
+        const categoriesMatch = line.match(/^(\s*)categories:\s*(.*)$/);
+
+        if (categoriesMatch) {
+          categoriesIndent = categoriesMatch[1];
+          const trailingContent = categoriesMatch[2].trim();
           categoriesStartLine = i;
-        } else if (line.match(/^categories:\s*\[/)) {
-          categoriesStartLine = i;
-          categoriesEndLine = i;
-          break;
-        } else if (inCategories) {
-          if (line.match(/^\s+-\s/)) {
+
+          // Handle inline array format: categories: [a, b, c]
+          if (trailingContent.startsWith("[")) {
             categoriesEndLine = i;
-          } else if (!line.match(/^\s*$/)) {
+            // Check if array spans multiple lines
+            if (!trailingContent.endsWith("]")) {
+              // Multi-line array - find the closing bracket
+              for (let j = i + 1; j < frontmatterEnd; j++) {
+                categoriesEndLine = j;
+                if (lines[j].includes("]")) {
+                  break;
+                }
+              }
+            }
+            break;
+          }
+          // Handle inline single value: categories: foo
+          else if (trailingContent && !trailingContent.startsWith("-")) {
+            categoriesEndLine = i;
+            break;
+          }
+          // Start of list format
+          else {
+            inCategories = true;
+            categoriesEndLine = i;
+          }
+        } else if (inCategories) {
+          // Check if this is a list item (with proper indentation)
+          if (line.match(/^\s+-\s/) || line.match(/^\s+-$/)) {
+            categoriesEndLine = i;
+          }
+          // Empty lines within categories are OK
+          else if (line.match(/^\s*$/)) {
+            continue;
+          }
+          // A new key starts - stop looking
+          else if (line.match(/^\s*\S+:/)) {
+            break;
+          }
+          // Comments or other content - stop
+          else if (line.trim() && !line.match(/^\s+-/)) {
             break;
           }
         }
@@ -366,9 +405,10 @@ export default class AutoCategoriesPlugin extends Plugin {
 
       if (categoriesStartLine === -1) return;
 
-      const newCategoriesLines = ["categories:"];
+      // Build new categories block with consistent formatting
+      const newCategoriesLines = [`${categoriesIndent}categories:`];
       for (const cat of newCategories) {
-        newCategoriesLines.push(`  - ${cat}`);
+        newCategoriesLines.push(`${categoriesIndent}  - ${cat}`);
       }
 
       const newLines = [
@@ -522,8 +562,23 @@ tags:
     new CategoriesOverviewModal(
       this.app,
       Array.from(usedCategories).sort(),
-      existingCategories.sort()
+      existingCategories.sort(),
+      this.settings.caseSensitive
     ).open();
+  }
+
+  /**
+   * Normalize category name based on caseSensitive setting
+   */
+  private normalizeCategoryName(name: string): string {
+    return this.settings.caseSensitive ? name : name.toLowerCase();
+  }
+
+  /**
+   * Check if two category names match (respecting caseSensitive setting)
+   */
+  private categoryNamesMatch(a: string, b: string): boolean {
+    return this.normalizeCategoryName(a) === this.normalizeCategoryName(b);
   }
 
   /**
@@ -533,8 +588,13 @@ tags:
     const usedCategories = this.getAllUsedCategories();
     const existingCategories = this.getAllExistingCategories();
 
+    // Create a normalized set of used categories for comparison
+    const normalizedUsedCategories = new Set(
+      Array.from(usedCategories).map(cat => this.normalizeCategoryName(cat))
+    );
+
     const orphans = existingCategories.filter(
-      (cat) => !usedCategories.has(cat)
+      (cat) => !normalizedUsedCategories.has(this.normalizeCategoryName(cat))
     );
 
     if (orphans.length === 0) {
@@ -626,11 +686,24 @@ tags:
 class CategoriesOverviewModal extends Modal {
   usedCategories: string[];
   existingCategories: string[];
+  caseSensitive: boolean;
 
-  constructor(app: App, usedCategories: string[], existingCategories: string[]) {
+  constructor(app: App, usedCategories: string[], existingCategories: string[], caseSensitive: boolean) {
     super(app);
     this.usedCategories = usedCategories;
     this.existingCategories = existingCategories;
+    this.caseSensitive = caseSensitive;
+  }
+
+  /**
+   * Check if a category exists in the list (respecting case sensitivity)
+   */
+  private categoryExistsIn(category: string, list: string[]): boolean {
+    if (this.caseSensitive) {
+      return list.includes(category);
+    }
+    const lowerCategory = category.toLowerCase();
+    return list.some(c => c.toLowerCase() === lowerCategory);
   }
 
   onOpen() {
@@ -654,7 +727,7 @@ class CategoriesOverviewModal extends Modal {
     for (const cat of this.usedCategories) {
       const li = usedList.createEl("li");
       li.createEl("span", { text: cat });
-      if (!this.existingCategories.includes(cat)) {
+      if (!this.categoryExistsIn(cat, this.existingCategories)) {
         li.createEl("span", {
           text: " (missing file)",
           cls: "auto-categories-warning",
@@ -664,7 +737,7 @@ class CategoriesOverviewModal extends Modal {
 
     // Orphans
     const orphans = this.existingCategories.filter(
-      (cat) => !this.usedCategories.includes(cat)
+      (cat) => !this.categoryExistsIn(cat, this.usedCategories)
     );
     if (orphans.length > 0) {
       contentEl.createEl("h3", { text: "Orphan Categories (unused)" });

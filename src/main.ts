@@ -8,6 +8,7 @@ import {
   TFolder,
   MarkdownView,
   Modal,
+  Menu,
 } from "obsidian";
 
 interface AutoCategoriesSettings {
@@ -561,6 +562,7 @@ tags:
 
     new CategoriesOverviewModal(
       this.app,
+      this,
       Array.from(usedCategories).sort(),
       existingCategories.sort(),
       this.settings.caseSensitive
@@ -630,6 +632,123 @@ tags:
   }
 
   /**
+   * Rename a category
+   */
+  async renameCategory(oldName: string, newName: string): Promise<boolean> {
+    // Validate new name
+    const validation = this.validateCategoryName(newName);
+    if (!validation.valid || !validation.sanitized) {
+      new Notice(`Invalid category name: ${validation.error || "Name is empty"}`);
+      return false;
+    }
+    newName = validation.sanitized;
+
+    // Check if old and new name are the same
+    if (oldName === newName) {
+      new Notice("New name is the same as the old name");
+      return false;
+    }
+
+    // Check if new category already exists
+    const newCategoryPath = `${this.settings.categoriesFolder}/${newName}.md`;
+    if (this.app.vault.getAbstractFileByPath(newCategoryPath)) {
+      new Notice(`Category "${newName}" already exists`);
+      return false;
+    }
+
+    try {
+      // 1. Rename category file
+      const oldCategoryPath = `${this.settings.categoriesFolder}/${oldName}.md`;
+      const categoryFile = this.app.vault.getAbstractFileByPath(oldCategoryPath);
+      if (categoryFile instanceof TFile) {
+        await this.app.vault.rename(categoryFile, newCategoryPath);
+      }
+
+      // 2. Rename base file
+      const oldBasePath = `${this.settings.basesFolder}/${oldName}.base`;
+      const newBasePath = `${this.settings.basesFolder}/${newName}.base`;
+      const baseFile = this.app.vault.getAbstractFileByPath(oldBasePath);
+      if (baseFile instanceof TFile) {
+        await this.app.vault.rename(baseFile, newBasePath);
+      }
+
+      // 3. Update content of category file (wikilink to base)
+      const renamedCategoryFile = this.app.vault.getAbstractFileByPath(newCategoryPath);
+      if (renamedCategoryFile instanceof TFile) {
+        let content = await this.app.vault.read(renamedCategoryFile);
+        content = content.replace(
+          new RegExp(`!\\[\\[${this.escapeRegex(oldName)}\\.base\\]\\]`, "g"),
+          `![[${newName}.base]]`
+        );
+        await this.app.vault.modify(renamedCategoryFile, content);
+      }
+
+      // 4. Update content of base file (link filter)
+      const renamedBaseFile = this.app.vault.getAbstractFileByPath(newBasePath);
+      if (renamedBaseFile instanceof TFile) {
+        let content = await this.app.vault.read(renamedBaseFile);
+        content = content.replace(
+          new RegExp(`link\\("${this.escapeRegex(oldName)}"\\)`, "g"),
+          `link("${newName}")`
+        );
+        await this.app.vault.modify(renamedBaseFile, content);
+      }
+
+      // 5. Update all notes that use this category
+      const allFiles = this.app.vault.getMarkdownFiles();
+      for (const file of allFiles) {
+        if (this.shouldExcludeFile(file)) continue;
+
+        const metadata = this.app.metadataCache.getFileCache(file);
+        const frontmatter = metadata?.frontmatter;
+
+        if (!frontmatter?.categories) continue;
+
+        let categories = frontmatter.categories;
+        if (!Array.isArray(categories)) {
+          categories = [categories];
+        }
+
+        let hasOldCategory = false;
+        for (const cat of categories) {
+          const catStr = String(cat);
+          const match = catStr.match(/\[\[([^\]]+)\]\]/);
+          const categoryName = match ? match[1] : catStr.trim();
+
+          if (this.categoryNamesMatch(categoryName, oldName)) {
+            hasOldCategory = true;
+            break;
+          }
+        }
+
+        if (hasOldCategory) {
+          let content = await this.app.vault.read(file);
+          // Replace wikilink in frontmatter
+          content = content.replace(
+            new RegExp(`\\[\\[${this.escapeRegex(oldName)}\\]\\]`, "g"),
+            `[[${newName}]]`
+          );
+          await this.app.vault.modify(file, content);
+        }
+      }
+
+      this.notify(`Renamed category: ${oldName} → ${newName}`);
+      return true;
+    } catch (error) {
+      console.error("Auto Categories: Error renaming category", error);
+      new Notice(`Error renaming category: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * Escape special regex characters in a string
+   */
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  /**
    * Sync all categories across the vault
    */
   async syncAllCategories() {
@@ -681,15 +800,86 @@ tags:
 }
 
 /**
+ * Rename Category Modal
+ */
+class RenameCategoryModal extends Modal {
+  plugin: AutoCategoriesPlugin;
+  categoryName: string;
+  onRename: (newName: string) => void;
+
+  constructor(app: App, plugin: AutoCategoriesPlugin, categoryName: string, onRename: (newName: string) => void) {
+    super(app);
+    this.plugin = plugin;
+    this.categoryName = categoryName;
+    this.onRename = onRename;
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+
+    contentEl.createEl("h2", { text: "Rename Category" });
+
+    contentEl.createEl("p", { text: `Current name: ${this.categoryName}` });
+
+    const inputContainer = contentEl.createDiv({ cls: "auto-categories-rename-input" });
+    const input = inputContainer.createEl("input", {
+      type: "text",
+      value: this.categoryName,
+    });
+    input.style.width = "100%";
+    input.focus();
+    input.select();
+
+    const buttonContainer = contentEl.createDiv({ cls: "auto-categories-rename-buttons" });
+    buttonContainer.style.marginTop = "1em";
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.gap = "0.5em";
+    buttonContainer.style.justifyContent = "flex-end";
+
+    const cancelBtn = buttonContainer.createEl("button", { text: "Cancel" });
+    cancelBtn.onclick = () => this.close();
+
+    const renameBtn = buttonContainer.createEl("button", { text: "Rename", cls: "mod-cta" });
+    renameBtn.onclick = () => {
+      const newName = input.value.trim();
+      if (!newName) {
+        new Notice("Category name cannot be empty");
+        return;
+      }
+      this.close();
+      this.onRename(newName);
+    };
+
+    // Allow Enter key to submit
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        renameBtn.click();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        this.close();
+      }
+    });
+  }
+
+  onClose() {
+    this.contentEl.empty();
+  }
+}
+
+/**
  * Categories Overview Modal
  */
 class CategoriesOverviewModal extends Modal {
+  plugin: AutoCategoriesPlugin;
   usedCategories: string[];
   existingCategories: string[];
   caseSensitive: boolean;
 
-  constructor(app: App, usedCategories: string[], existingCategories: string[], caseSensitive: boolean) {
+  constructor(app: App, plugin: AutoCategoriesPlugin, usedCategories: string[], existingCategories: string[], caseSensitive: boolean) {
     super(app);
+    this.plugin = plugin;
     this.usedCategories = usedCategories;
     this.existingCategories = existingCategories;
     this.caseSensitive = caseSensitive;
@@ -704,6 +894,30 @@ class CategoriesOverviewModal extends Modal {
     }
     const lowerCategory = category.toLowerCase();
     return list.some(c => c.toLowerCase() === lowerCategory);
+  }
+
+  /**
+   * Show context menu for a category
+   */
+  private showCategoryContextMenu(event: MouseEvent, categoryName: string) {
+    const menu = new Menu();
+
+    menu.addItem((item) => {
+      item.setTitle("Rename")
+        .setIcon("pencil")
+        .onClick(() => {
+          new RenameCategoryModal(this.app, this.plugin, categoryName, async (newName) => {
+            const success = await this.plugin.renameCategory(categoryName, newName);
+            if (success) {
+              // Refresh the modal
+              this.close();
+              this.plugin.showCategoriesOverview();
+            }
+          }).open();
+        });
+    });
+
+    menu.showAtMouseEvent(event);
   }
 
   onOpen() {
@@ -725,7 +939,7 @@ class CategoriesOverviewModal extends Modal {
     contentEl.createEl("h3", { text: "Used Categories" });
     const usedList = contentEl.createEl("ul");
     for (const cat of this.usedCategories) {
-      const li = usedList.createEl("li");
+      const li = usedList.createEl("li", { cls: "auto-categories-item" });
       li.createEl("span", { text: cat });
       if (!this.categoryExistsIn(cat, this.existingCategories)) {
         li.createEl("span", {
@@ -733,6 +947,12 @@ class CategoriesOverviewModal extends Modal {
           cls: "auto-categories-warning",
         });
       }
+
+      // Add right-click context menu
+      li.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        this.showCategoryContextMenu(e, cat);
+      });
     }
 
     // Orphans
@@ -743,7 +963,13 @@ class CategoriesOverviewModal extends Modal {
       contentEl.createEl("h3", { text: "Orphan Categories (unused)" });
       const orphanList = contentEl.createEl("ul", { cls: "auto-categories-orphan-list" });
       for (const cat of orphans) {
-        orphanList.createEl("li", { text: cat });
+        const li = orphanList.createEl("li", { text: cat, cls: "auto-categories-item" });
+
+        // Add right-click context menu
+        li.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          this.showCategoryContextMenu(e, cat);
+        });
       }
     }
   }

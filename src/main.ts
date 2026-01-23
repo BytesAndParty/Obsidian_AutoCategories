@@ -15,11 +15,13 @@ interface AutoCategoriesSettings {
   categoriesFolder: string;
   basesFolder: string;
   excludeFolders: string[];
+  categoryCheckFolders: string[];
   showNotifications: boolean;
   caseSensitive: boolean;
   syncOnStartup: boolean;
   nestedSeparator: string;
   baseTemplate: string;
+  debounceDelay: number;
 }
 
 const DEFAULT_BASE_TEMPLATE = `filters:
@@ -62,11 +64,13 @@ const DEFAULT_SETTINGS: AutoCategoriesSettings = {
   categoriesFolder: "Categories",
   basesFolder: "Templates/Bases",
   excludeFolders: ["Templates"],
+  categoryCheckFolders: [],
   showNotifications: true,
   caseSensitive: true,
   syncOnStartup: false,
   nestedSeparator: " - ",
   baseTemplate: DEFAULT_BASE_TEMPLATE,
+  debounceDelay: 500,
 };
 
 // Characters not allowed in file names
@@ -74,6 +78,7 @@ const INVALID_CHARS = /[\\:*?"<>|]/g;
 
 export default class AutoCategoriesPlugin extends Plugin {
   settings: AutoCategoriesSettings = DEFAULT_SETTINGS;
+  private debounceTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   async onload() {
     await this.loadSettings();
@@ -114,10 +119,10 @@ export default class AutoCategoriesPlugin extends Plugin {
       callback: () => this.findOrphanCategories(),
     });
 
-    // Process file when metadata changes (frontmatter is parsed)
+    // Process file when metadata changes (frontmatter is parsed) - with debounce
     this.registerEvent(
       this.app.metadataCache.on('changed', (file: TFile) => {
-        this.processFile(file);
+        this.debouncedProcessFile(file);
       })
     );
 
@@ -133,7 +138,29 @@ export default class AutoCategoriesPlugin extends Plugin {
   }
 
   onunload() {
+    // Clear all debounce timers
+    for (const timer of this.debounceTimers.values()) {
+      clearTimeout(timer);
+    }
+    this.debounceTimers.clear();
     console.log("Auto Categories plugin unloaded");
+  }
+
+  /**
+   * Debounced version of processFile to avoid excessive processing
+   */
+  private debouncedProcessFile(file: TFile) {
+    const existingTimer = this.debounceTimers.get(file.path);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    const timer = setTimeout(() => {
+      this.debounceTimers.delete(file.path);
+      this.processFile(file);
+    }, this.settings.debounceDelay);
+
+    this.debounceTimers.set(file.path, timer);
   }
 
   async loadSettings() {
@@ -526,30 +553,44 @@ tags:
   }
 
   /**
-   * Get all existing category files
+   * Get all existing category files from categoriesFolder and categoryCheckFolders
    */
   getAllExistingCategories(): string[] {
-    const categoriesFolder = this.app.vault.getAbstractFileByPath(
-      this.settings.categoriesFolder
-    );
-
-    if (!categoriesFolder || !(categoriesFolder instanceof TFolder)) {
-      return [];
-    }
-
     const categories: string[] = [];
+    const seen = new Set<string>();
 
     const processFolder = (folder: TFolder) => {
       for (const child of folder.children) {
         if (child instanceof TFile && child.extension === "md") {
-          categories.push(child.basename);
+          const name = child.basename;
+          const key = this.settings.caseSensitive ? name : name.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            categories.push(name);
+          }
         } else if (child instanceof TFolder) {
           processFolder(child);
         }
       }
     };
 
-    processFolder(categoriesFolder);
+    // Process main categories folder
+    const categoriesFolder = this.app.vault.getAbstractFileByPath(
+      this.settings.categoriesFolder
+    );
+    if (categoriesFolder instanceof TFolder) {
+      processFolder(categoriesFolder);
+    }
+
+    // Process additional category check folders
+    for (const folderPath of this.settings.categoryCheckFolders) {
+      if (!folderPath.trim()) continue;
+      const folder = this.app.vault.getAbstractFileByPath(folderPath.trim());
+      if (folder instanceof TFolder) {
+        processFolder(folder);
+      }
+    }
+
     return categories;
   }
 
@@ -729,6 +770,18 @@ tags:
             `[[${newName}]]`
           );
           await this.app.vault.modify(file, content);
+        }
+      }
+
+      // 6. Refresh the active editor if it was affected
+      const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+      if (activeView?.file) {
+        const activeMetadata = this.app.metadataCache.getFileCache(activeView.file);
+        const activeFrontmatter = activeMetadata?.frontmatter;
+        if (activeFrontmatter?.categories) {
+          // Trigger a re-render by briefly toggling the view
+          const state = activeView.getState();
+          await activeView.setState(state, { history: false });
         }
       }
 
@@ -1099,6 +1152,22 @@ class AutoCategoriesSettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName("Additional category check folders")
+      .setDesc("Additional folders to check for existing categories (comma-separated). Used to determine if a category already exists.")
+      .addText((text) =>
+        text
+          .setPlaceholder("Notes/Categories, Projects")
+          .setValue(this.plugin.settings.categoryCheckFolders.join(", "))
+          .onChange(async (value) => {
+            this.plugin.settings.categoryCheckFolders = value
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0);
+            await this.plugin.saveSettings();
+          })
+      );
+
     // Behavior Section
     containerEl.createEl("h3", { text: "Behavior" });
 
@@ -1147,6 +1216,20 @@ class AutoCategoriesSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.nestedSeparator)
           .onChange(async (value) => {
             this.plugin.settings.nestedSeparator = value || " - ";
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Debounce delay (ms)")
+      .setDesc("Delay before processing file changes (prevents excessive processing)")
+      .addText((text) =>
+        text
+          .setPlaceholder("500")
+          .setValue(String(this.plugin.settings.debounceDelay))
+          .onChange(async (value) => {
+            const num = parseInt(value, 10);
+            this.plugin.settings.debounceDelay = isNaN(num) || num < 0 ? 500 : num;
             await this.plugin.saveSettings();
           })
       );

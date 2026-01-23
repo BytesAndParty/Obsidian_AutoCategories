@@ -21,6 +21,7 @@ interface AutoCategoriesSettings {
   syncOnStartup: boolean;
   nestedSeparator: string;
   baseTemplate: string;
+  baseTemplatePath: string;
   debounceDelay: number;
 }
 
@@ -70,6 +71,7 @@ const DEFAULT_SETTINGS: AutoCategoriesSettings = {
   syncOnStartup: false,
   nestedSeparator: " - ",
   baseTemplate: DEFAULT_BASE_TEMPLATE,
+  baseTemplatePath: "",
   debounceDelay: 500,
 };
 
@@ -476,7 +478,7 @@ tags:
       }
 
       if (!this.app.vault.getAbstractFileByPath(basePath)) {
-        const baseContent = this.generateBaseContent(categoryName);
+        const baseContent = await this.generateBaseContent(categoryName);
         await this.app.vault.create(basePath, baseContent);
       }
     } catch (error) {
@@ -511,10 +513,26 @@ tags:
   }
 
   /**
-   * Generate base content using the template
+   * Generate base content using the template (from file or inline)
    */
-  generateBaseContent(categoryName: string): string {
-    return this.settings.baseTemplate.replace(/\{\{categoryName\}\}/g, categoryName) + "\n";
+  async generateBaseContent(categoryName: string): Promise<string> {
+    let template = this.settings.baseTemplate;
+
+    // Try to load template from file if path is specified
+    if (this.settings.baseTemplatePath) {
+      const templateFile = this.app.vault.getAbstractFileByPath(this.settings.baseTemplatePath);
+      if (templateFile instanceof TFile) {
+        try {
+          template = await this.app.vault.read(templateFile);
+        } catch (error) {
+          console.warn(`Auto Categories: Could not read template file "${this.settings.baseTemplatePath}", using inline template`);
+        }
+      } else {
+        console.warn(`Auto Categories: Template file "${this.settings.baseTemplatePath}" not found, using inline template`);
+      }
+    }
+
+    return template.replace(/\{\{categoryName\}\}/g, categoryName) + "\n";
   }
 
   /**
@@ -1238,8 +1256,21 @@ class AutoCategoriesSettingTab extends PluginSettingTab {
     containerEl.createEl("h3", { text: "Base Template" });
 
     new Setting(containerEl)
-      .setName("Base file template")
-      .setDesc("Template for new .base files. Use {{categoryName}} as placeholder.")
+      .setName("Base template file path")
+      .setDesc("Path to a template file in your vault (e.g., Templates/category.base). If set, this file is used instead of the inline template below. Use {{categoryName}} as placeholder.")
+      .addText((text) =>
+        text
+          .setPlaceholder("Templates/category-template.base")
+          .setValue(this.plugin.settings.baseTemplatePath)
+          .onChange(async (value) => {
+            this.plugin.settings.baseTemplatePath = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Base file template (fallback)")
+      .setDesc("Inline template for new .base files. Used when no template file path is set. Use {{categoryName}} as placeholder.")
       .addTextArea((text) => {
         text
           .setPlaceholder(DEFAULT_BASE_TEMPLATE)

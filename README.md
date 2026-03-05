@@ -133,14 +133,12 @@ bun run build
 bun run deploy
 ```
 
-## Part of the BytesAndParty Plugin Suite
+## Works Well with Other BytesAndParty Plugins
 
-This plugin works great alongside other plugins from the same author:
-
-- [Better Gitignore](https://github.com/BytesAndParty/BetterGitignore) - Beautiful .gitignore editor with templates
-- [Command Overview](https://github.com/BytesAndParty/CommandOverview) - Quick command palette with shortcuts
-- [Company Knowledge Hub](https://github.com/BytesAndParty/CompanyKnowledgeHub) - Publish notes to a shared knowledge base
-- [Customer Tag](https://github.com/BytesAndParty/CustomerTag) - Organize notes by customer tags
+- [Company Knowledge Hub](https://github.com/BytesAndParty/CompanyKnowledgeHub) - Keep `categories` consistent before publishing notes to `PUBLIC/`.
+- [Customer Tag Sorter](https://github.com/BytesAndParty/CustomerTag) - Combine topic categories with customer-based folder routing.
+- [Command Overview](https://github.com/BytesAndParty/CommandOverview) - Keep category sync and orphan cleanup commands one shortcut away.
+- [Better Gitignore](https://github.com/BytesAndParty/BetterGitignore) - Keep generated and vault-local noise out of Git.
 
 ## License
 

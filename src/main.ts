@@ -136,7 +136,6 @@ export default class AutoCategoriesPlugin extends Plugin {
       });
     }
 
-    console.log("Auto Categories plugin loaded");
   }
 
   onunload() {
@@ -145,7 +144,6 @@ export default class AutoCategoriesPlugin extends Plugin {
       clearTimeout(timer);
     }
     this.debounceTimers.clear();
-    console.log("Auto Categories plugin unloaded");
   }
 
   /**

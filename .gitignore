@@ -19,3 +19,6 @@ Obsidian-Full-Vault/
 .idea/
 *.swp
 *.swo
+
+# Claude Code local permissions
+.claude/settings.local.json

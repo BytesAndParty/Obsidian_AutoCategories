@@ -1,0 +1,2907 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`snapshot processFile a 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: A",
+    "Created category: B",
+    "Created category: Books",
+    "Created category: Fiction",
+    "Created category: Foo",
+    "Created category: Foo-",
+    "Created category: Travel - Europe",
+    "Created category: books",
+    "Invalid characters in "Foo]", sanitized to "Foo-"",
+  ],
+  "ret": true,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/A.md": 
+"---
+tags:
+  - categories
+---
+
+![[A.base]]
+"
+,
+    "Categories/B.md": 
+"---
+tags:
+  - categories
+---
+
+![[B.base]]
+"
+,
+    "Categories/Books.md": 
+"---
+tags:
+  - categories
+---
+
+![[Books.base]]
+"
+,
+    "Categories/Fiction.md": 
+"---
+tags:
+  - categories
+---
+
+![[Fiction.base]]
+"
+,
+    "Categories/Foo-.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo-.base]]
+"
+,
+    "Categories/Foo.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo.base]]
+"
+,
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Travel - Europe.md": 
+"---
+tags:
+  - categories
+---
+
+![[Travel - Europe.base]]
+"
+,
+    "Categories/Used.md": "x",
+    "Categories/books.md": 
+"---
+tags:
+  - categories
+---
+
+![[books.base]]
+"
+,
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/A.base": "<default base>",
+    "Templates/Bases/B.base": "<default base>",
+    "Templates/Bases/Bar.base": "<default base>",
+    "Templates/Bases/Books.base": "<default base>",
+    "Templates/Bases/Fiction.base": "<default base>",
+    "Templates/Bases/Foo-.base": "<default base>",
+    "Templates/Bases/Foo.base": "<default base>",
+    "Templates/Bases/Travel - Europe.base": "<default base>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/Bases/books.base": "<default base>",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories: 
+  - "[[Books]]"
+  - "[[Fiction|F]]"
+  - "[[A]]"
+  - "[[B]]"
+  - "[[Foo-]]"
+  - "[[Foo]]"
+  - "[[Travel - Europe]]"
+  - "[[books]]"
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot processFile a (case-insensitive) 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: A",
+    "Created category: B",
+    "Created category: Books",
+    "Created category: Fiction",
+    "Created category: Foo",
+    "Created category: Foo-",
+    "Created category: Travel - Europe",
+    "Invalid characters in "Foo]", sanitized to "Foo-"",
+  ],
+  "ret": true,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/A.md": 
+"---
+tags:
+  - categories
+---
+
+![[A.base]]
+"
+,
+    "Categories/B.md": 
+"---
+tags:
+  - categories
+---
+
+![[B.base]]
+"
+,
+    "Categories/Books.md": 
+"---
+tags:
+  - categories
+---
+
+![[Books.base]]
+"
+,
+    "Categories/Fiction.md": 
+"---
+tags:
+  - categories
+---
+
+![[Fiction.base]]
+"
+,
+    "Categories/Foo-.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo-.base]]
+"
+,
+    "Categories/Foo.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo.base]]
+"
+,
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Travel - Europe.md": 
+"---
+tags:
+  - categories
+---
+
+![[Travel - Europe.base]]
+"
+,
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/A.base": "<default base>",
+    "Templates/Bases/B.base": "<default base>",
+    "Templates/Bases/Bar.base": "<default base>",
+    "Templates/Bases/Books.base": "<default base>",
+    "Templates/Bases/Fiction.base": "<default base>",
+    "Templates/Bases/Foo-.base": "<default base>",
+    "Templates/Bases/Foo.base": "<default base>",
+    "Templates/Bases/Travel - Europe.base": "<default base>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories: 
+  - "[[Books]]"
+  - "[[Fiction|F]]"
+  - "[[A]]"
+  - "[[B]]"
+  - "[[Foo-]]"
+  - "[[Foo]]"
+  - "[[Travel - Europe]]"
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot sync 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: A",
+    "Created category: B",
+    "Created category: Books",
+    "Created category: Fiction",
+    "Created category: Foo",
+    "Created category: Foo-",
+    "Created category: Missing",
+    "Created category: Single",
+    "Created category: Travel - Europe",
+    "Created category: books",
+    "Invalid characters in "Foo]", sanitized to "Foo-"",
+    "Synced 12 categories from 3 files",
+  ],
+  "ret": undefined,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/A.md": 
+"---
+tags:
+  - categories
+---
+
+![[A.base]]
+"
+,
+    "Categories/B.md": 
+"---
+tags:
+  - categories
+---
+
+![[B.base]]
+"
+,
+    "Categories/Books.md": 
+"---
+tags:
+  - categories
+---
+
+![[Books.base]]
+"
+,
+    "Categories/Fiction.md": 
+"---
+tags:
+  - categories
+---
+
+![[Fiction.base]]
+"
+,
+    "Categories/Foo-.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo-.base]]
+"
+,
+    "Categories/Foo.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo.base]]
+"
+,
+    "Categories/Missing.md": 
+"---
+tags:
+  - categories
+---
+
+![[Missing.base]]
+"
+,
+    "Categories/Single.md": 
+"---
+tags:
+  - categories
+---
+
+![[Single.base]]
+"
+,
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Travel - Europe.md": 
+"---
+tags:
+  - categories
+---
+
+![[Travel - Europe.base]]
+"
+,
+    "Categories/Used.md": "x",
+    "Categories/books.md": 
+"---
+tags:
+  - categories
+---
+
+![[books.base]]
+"
+,
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/A.base": "<default base>",
+    "Templates/Bases/B.base": "<default base>",
+    "Templates/Bases/Bar.base": "<default base>",
+    "Templates/Bases/Books.base": "<default base>",
+    "Templates/Bases/Fiction.base": "<default base>",
+    "Templates/Bases/Foo-.base": "<default base>",
+    "Templates/Bases/Foo.base": "<default base>",
+    "Templates/Bases/Missing.base": "<default base>",
+    "Templates/Bases/Single.base": "<default base>",
+    "Templates/Bases/Travel - Europe.base": "<default base>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/Bases/books.base": "<default base>",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories: 
+  - "[[Books]]"
+  - "[[Fiction|F]]"
+  - "[[A]]"
+  - "[[B]]"
+  - "[[Foo-]]"
+  - "[[Foo]]"
+  - "[[Travel - Europe]]"
+  - "[[books]]"
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: 
+  - "[[Single]]"
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot used categories 1`] = `
+{
+  "modals": [],
+  "notices": [],
+  "ret": [
+    "Books",
+    "Fiction",
+    "A",
+    "B",
+    "Foo-",
+    "Foo",
+    "Travel - Europe",
+    "books",
+    "Used",
+    "Bar",
+    "Single",
+    "Missing",
+  ],
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot existing categories 1`] = `
+{
+  "modals": [],
+  "notices": [],
+  "ret": [
+    [
+      "Used",
+      "Orphan",
+      "orphan2",
+    ],
+    [
+      "Used",
+      "Orphan",
+      "orphan2",
+      "Bar",
+      "Unrelated",
+    ],
+  ],
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot overview modal 1`] = `
+{
+  "modals": [
+    {
+      "dom": {
+        "c": "",
+        "k": [
+          {
+            "c": "auto-categories-stats",
+            "k": [
+              {
+                "c": "",
+                "k": [],
+                "t": "p",
+                "x": "Used in notes: 12",
+              },
+              {
+                "c": "",
+                "k": [],
+                "t": "p",
+                "x": "Category files: 3",
+              },
+            ],
+            "t": "div",
+            "x": "",
+          },
+          {
+            "c": "",
+            "k": [],
+            "t": "h3",
+            "x": "Used categories",
+          },
+          {
+            "c": "",
+            "k": [
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "A",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "B",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Bar",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Books",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Fiction",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Foo",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Foo-",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Missing",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Single",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Travel - Europe",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Used",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "books",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+            ],
+            "t": "ul",
+            "x": "",
+          },
+          {
+            "c": "",
+            "k": [],
+            "t": "h3",
+            "x": "Orphan categories (unused)",
+          },
+          {
+            "c": "auto-categories-orphan-list",
+            "k": [
+              {
+                "c": "auto-categories-item",
+                "k": [],
+                "t": "li",
+                "x": "Orphan",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [],
+                "t": "li",
+                "x": "orphan2",
+              },
+            ],
+            "t": "ul",
+            "x": "",
+          },
+        ],
+        "t": "div",
+        "x": "",
+      },
+      "title": "Categories overview",
+    },
+  ],
+  "notices": [],
+  "ret": undefined,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot overview modal (case-insensitive) 1`] = `
+{
+  "modals": [
+    {
+      "dom": {
+        "c": "",
+        "k": [
+          {
+            "c": "auto-categories-stats",
+            "k": [
+              {
+                "c": "",
+                "k": [],
+                "t": "p",
+                "x": "Used in notes: 11",
+              },
+              {
+                "c": "",
+                "k": [],
+                "t": "p",
+                "x": "Category files: 3",
+              },
+            ],
+            "t": "div",
+            "x": "",
+          },
+          {
+            "c": "",
+            "k": [],
+            "t": "h3",
+            "x": "Used categories",
+          },
+          {
+            "c": "",
+            "k": [
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "A",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "B",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Bar",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Books",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Fiction",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Foo",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Foo-",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Missing",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Single",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Travel - Europe",
+                  },
+                  {
+                    "c": "auto-categories-warning",
+                    "k": [],
+                    "t": "span",
+                    "x": " (missing file)",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [
+                  {
+                    "c": "",
+                    "k": [],
+                    "t": "span",
+                    "x": "Used",
+                  },
+                ],
+                "t": "li",
+                "x": "",
+              },
+            ],
+            "t": "ul",
+            "x": "",
+          },
+          {
+            "c": "",
+            "k": [],
+            "t": "h3",
+            "x": "Orphan categories (unused)",
+          },
+          {
+            "c": "auto-categories-orphan-list",
+            "k": [
+              {
+                "c": "auto-categories-item",
+                "k": [],
+                "t": "li",
+                "x": "Orphan",
+              },
+              {
+                "c": "auto-categories-item",
+                "k": [],
+                "t": "li",
+                "x": "orphan2",
+              },
+            ],
+            "t": "ul",
+            "x": "",
+          },
+        ],
+        "t": "div",
+        "x": "",
+      },
+      "title": "Categories overview",
+    },
+  ],
+  "notices": [],
+  "ret": undefined,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot orphan modal + delete all 1`] = `
+{
+  "modals": [
+    {
+      "dom": {
+        "c": "",
+        "k": [],
+        "t": "div",
+        "x": "",
+      },
+      "title": "Orphan categories",
+    },
+  ],
+  "notices": [
+    "Deleted category: Orphan",
+    "Deleted category: orphan2",
+  ],
+  "ret": undefined,
+  "trashed": [
+    "Categories/Sub/Orphan.md",
+    "Categories/orphan2.md",
+  ],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Used.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot delete check-folder + missing + used 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Category "Bar" not found",
+    "Category "Nope" not found",
+    "Deleted category: Used",
+  ],
+  "ret": [
+    false,
+    false,
+    true,
+  ],
+  "trashed": [
+    "Categories/Used.md",
+    "Templates/Bases/Used.base",
+  ],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot rename Used -> New$& 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: A",
+    "Created category: B",
+    "Created category: Books",
+    "Created category: Fiction",
+    "Created category: Foo",
+    "Created category: Foo-",
+    "Created category: Missing",
+    "Created category: Travel - Europe",
+    "Created category: books",
+    "Created category: projects - Bar",
+    "Invalid characters in "Foo]", sanitized to "Foo-"",
+    "Renamed category: Used → New$&",
+  ],
+  "ret": true,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/A.md": 
+"---
+tags:
+  - categories
+---
+
+![[A.base]]
+"
+,
+    "Categories/B.md": 
+"---
+tags:
+  - categories
+---
+
+![[B.base]]
+"
+,
+    "Categories/Books.md": 
+"---
+tags:
+  - categories
+---
+
+![[Books.base]]
+"
+,
+    "Categories/Fiction.md": 
+"---
+tags:
+  - categories
+---
+
+![[Fiction.base]]
+"
+,
+    "Categories/Foo-.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo-.base]]
+"
+,
+    "Categories/Foo.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo.base]]
+"
+,
+    "Categories/Missing.md": 
+"---
+tags:
+  - categories
+---
+
+![[Missing.base]]
+"
+,
+    "Categories/New$&.md": "x",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Travel - Europe.md": 
+"---
+tags:
+  - categories
+---
+
+![[Travel - Europe.base]]
+"
+,
+    "Categories/books.md": 
+"---
+tags:
+  - categories
+---
+
+![[books.base]]
+"
+,
+    "Categories/orphan2.md": "x",
+    "Categories/projects - Bar.md": 
+"---
+tags:
+  - categories
+---
+
+![[projects - Bar.base]]
+"
+,
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/A.base": "<default base>",
+    "Templates/Bases/B.base": "<default base>",
+    "Templates/Bases/Books.base": "<default base>",
+    "Templates/Bases/Fiction.base": "<default base>",
+    "Templates/Bases/Foo-.base": "<default base>",
+    "Templates/Bases/Foo.base": "<default base>",
+    "Templates/Bases/Missing.base": "<default base>",
+    "Templates/Bases/New$&.base": "link("New$&")",
+    "Templates/Bases/Travel - Europe.base": "<default base>",
+    "Templates/Bases/books.base": "<default base>",
+    "Templates/Bases/projects - Bar.base": "<default base>",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories: 
+  - "[[Books]]"
+  - "[[Fiction|F]]"
+  - "[[A]]"
+  - "[[B]]"
+  - "[[Foo-]]"
+  - "[[Foo]]"
+  - "[[Travel - Europe]]"
+  - "[[books]]"
+  - "[[New$&]]"
+  - "[[projects - Bar]]"
+  - "[[Unfinished"
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[New$&]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot rename check-folder Bar 1`] = `
+{
+  "modals": [],
+  "notices": [
+    ""Projects/Bar.md" is outside the categories folder. Rename it manually.",
+  ],
+  "ret": false,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot rename invalid / same / collision 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Category "orphan2" already exists",
+    "Invalid category name: Category name is empty",
+    "New name is the same as the old name",
+  ],
+  "ret": [
+    false,
+    false,
+    false,
+  ],
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot rename case-only (case-insensitive) 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: A",
+    "Created category: B",
+    "Created category: Books",
+    "Created category: Fiction",
+    "Created category: Foo",
+    "Created category: Foo-",
+    "Created category: Missing",
+    "Created category: Travel - Europe",
+    "Created category: projects - Bar",
+    "Invalid characters in "Foo]", sanitized to "Foo-"",
+    "Renamed category: used → USED",
+  ],
+  "ret": true,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/A.md": 
+"---
+tags:
+  - categories
+---
+
+![[A.base]]
+"
+,
+    "Categories/B.md": 
+"---
+tags:
+  - categories
+---
+
+![[B.base]]
+"
+,
+    "Categories/Books.md": 
+"---
+tags:
+  - categories
+---
+
+![[Books.base]]
+"
+,
+    "Categories/Fiction.md": 
+"---
+tags:
+  - categories
+---
+
+![[Fiction.base]]
+"
+,
+    "Categories/Foo-.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo-.base]]
+"
+,
+    "Categories/Foo.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo.base]]
+"
+,
+    "Categories/Missing.md": 
+"---
+tags:
+  - categories
+---
+
+![[Missing.base]]
+"
+,
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Travel - Europe.md": 
+"---
+tags:
+  - categories
+---
+
+![[Travel - Europe.base]]
+"
+,
+    "Categories/USED.md": "x",
+    "Categories/orphan2.md": "x",
+    "Categories/projects - Bar.md": 
+"---
+tags:
+  - categories
+---
+
+![[projects - Bar.base]]
+"
+,
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/A.base": "<default base>",
+    "Templates/Bases/B.base": "<default base>",
+    "Templates/Bases/Books.base": "<default base>",
+    "Templates/Bases/Fiction.base": "<default base>",
+    "Templates/Bases/Foo-.base": "<default base>",
+    "Templates/Bases/Foo.base": "<default base>",
+    "Templates/Bases/Missing.base": "<default base>",
+    "Templates/Bases/Travel - Europe.base": "<default base>",
+    "Templates/Bases/USED.base": "link("USED")",
+    "Templates/Bases/projects - Bar.base": "<default base>",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories: 
+  - "[[Books]]"
+  - "[[Fiction|F]]"
+  - "[[A]]"
+  - "[[B]]"
+  - "[[Foo-]]"
+  - "[[Foo]]"
+  - "[[Travel - Europe]]"
+  - "[[USED]]"
+  - "[[projects - Bar]]"
+  - "[[Unfinished"
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories: 
+  - "[[USED]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot changed events 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: A",
+    "Created category: B",
+    "Created category: Books",
+    "Created category: Fiction",
+    "Created category: Foo",
+    "Created category: Foo-",
+    "Created category: Missing",
+    "Created category: Single",
+    "Created category: Travel - Europe",
+    "Created category: books",
+    "Invalid characters in "Foo]", sanitized to "Foo-"",
+  ],
+  "ret": undefined,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/A.md": 
+"---
+tags:
+  - categories
+---
+
+![[A.base]]
+"
+,
+    "Categories/B.md": 
+"---
+tags:
+  - categories
+---
+
+![[B.base]]
+"
+,
+    "Categories/Books.md": 
+"---
+tags:
+  - categories
+---
+
+![[Books.base]]
+"
+,
+    "Categories/Fiction.md": 
+"---
+tags:
+  - categories
+---
+
+![[Fiction.base]]
+"
+,
+    "Categories/Foo-.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo-.base]]
+"
+,
+    "Categories/Foo.md": 
+"---
+tags:
+  - categories
+---
+
+![[Foo.base]]
+"
+,
+    "Categories/Missing.md": 
+"---
+tags:
+  - categories
+---
+
+![[Missing.base]]
+"
+,
+    "Categories/Single.md": 
+"---
+tags:
+  - categories
+---
+
+![[Single.base]]
+"
+,
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Travel - Europe.md": 
+"---
+tags:
+  - categories
+---
+
+![[Travel - Europe.base]]
+"
+,
+    "Categories/Used.md": "x",
+    "Categories/books.md": 
+"---
+tags:
+  - categories
+---
+
+![[books.base]]
+"
+,
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/A.base": "<default base>",
+    "Templates/Bases/B.base": "<default base>",
+    "Templates/Bases/Bar.base": "<default base>",
+    "Templates/Bases/Books.base": "<default base>",
+    "Templates/Bases/Fiction.base": "<default base>",
+    "Templates/Bases/Foo-.base": "<default base>",
+    "Templates/Bases/Foo.base": "<default base>",
+    "Templates/Bases/Missing.base": "<default base>",
+    "Templates/Bases/Single.base": "<default base>",
+    "Templates/Bases/Travel - Europe.base": "<default base>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/Bases/books.base": "<default base>",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories: 
+  - "[[Books]]"
+  - "[[Fiction|F]]"
+  - "[[A]]"
+  - "[[B]]"
+  - "[[Foo-]]"
+  - "[[Foo]]"
+  - "[[Travel - Europe]]"
+  - "[[books]]"
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: 
+  - "[[Single]]"
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot base template + $ 1`] = `
+{
+  "modals": [],
+  "notices": [],
+  "ret": 
+"filters:
+  and:
+    - categories.contains(link("A$&B"))
+    - '!file.name.contains("Template")'
+properties:
+  file.name:
+    displayName: Name
+  created:
+    displayName: Created
+  file.ctime:
+    displayName: File Created
+  file.mtime:
+    displayName: Modified
+  tags:
+    displayName: Tags
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - created
+      - file.mtime
+      - tags
+    sort:
+      - property: file.mtime
+        direction: DESC
+  - type: cards
+    name: Cards
+    coverProperty: cover
+    order:
+      - file.name
+      - created
+    sort:
+      - property: file.mtime
+        direction: DESC
+"
+,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+  },
+}
+`;
+
+exports[`snapshot create failure 1`] = `
+{
+  "modals": [],
+  "notices": [
+    "Created category: Ok",
+    "Error creating category "Boom": Error: Simulated failure for Categories/Boom.md",
+    "Error creating category "Boom": Error: Simulated failure for Categories/Boom.md",
+  ],
+  "ret": false,
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Ok.md": 
+"---
+tags:
+  - categories
+---
+
+![[Ok.base]]
+"
+,
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Ok.base": "<default base>",
+    "a.md": 
+"---
+categories: 
+  - "[[Boom]]"
+  - "[[Ok]]"
+---
+Body
+"
+,
+  },
+}
+`;
+
+exports[`snapshot settings tab display + onChange 1`] = `
+{
+  "modals": [],
+  "notices": [],
+  "ret": {
+    "after": [
+      [
+        "Categories folder",
+        " /My//Cats/ ",
+        "{"categoriesFolder":"My/Cats","basesFolder":"Templates/Bases","excludeFolders":["Templates"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Categories folder",
+        "   ",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":["Templates"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Categories folder",
+        "/",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":["Templates"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Bases folder",
+        "B//x/",
+        "{"categoriesFolder":"Categories","basesFolder":"B/x","excludeFolders":["Templates"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Bases folder",
+        "",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":["Templates"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Bases folder",
+        "\\",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":["Templates"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Exclude folders",
+        " A/ , ,B//c ",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":["A","B/c"],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Exclude folders",
+        "",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Additional category check folders",
+        "P/, Q, /",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":["P","Q"],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Additional category check folders",
+        "",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Sync on startup",
+        true,
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":true,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Sync on startup",
+        false,
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Case sensitive",
+        false,
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":false,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Case sensitive",
+        true,
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":true,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Show notifications",
+        false,
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Nested category separator",
+        " > ",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" > ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Nested category separator",
+        "",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":5}",
+        undefined,
+      ],
+      [
+        "Debounce delay (ms)",
+        "250",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":250}",
+        undefined,
+      ],
+      [
+        "Debounce delay (ms)",
+        "-3",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":500}",
+        undefined,
+      ],
+      [
+        "Debounce delay (ms)",
+        "abc",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":500}",
+        undefined,
+      ],
+      [
+        "Base template file path",
+        " T//x.base ",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"T/x.base","debounceDelay":500}",
+        undefined,
+      ],
+      [
+        "Base template file path",
+        "  ",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":500}",
+        undefined,
+      ],
+      [
+        "Base file template (fallback)",
+        "custom {{categoryName}}",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":500}",
+        "custom {{categoryName}}",
+      ],
+      [
+        "Base file template (fallback)",
+        "",
+        "{"categoriesFolder":"Categories","basesFolder":"Templates/Bases","excludeFolders":[],"categoryCheckFolders":[],"showNotifications":false,"caseSensitive":true,"syncOnStartup":false,"nestedSeparator":" - ","baseTemplatePath":"","debounceDelay":500}",
+        
+"filters:
+  and:
+    - categories.contains(link("{{categoryName}}"))
+    - '!file.name.contains("Template")'
+properties:
+  file.name:
+    displayName: Name
+  created:
+    displayName: Created
+  file.ctime:
+    displayName: File Created
+  file.mtime:
+    displayName: Modified
+  tags:
+    displayName: Tags
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - created
+      - file.mtime
+      - tags
+    sort:
+      - property: file.mtime
+        direction: DESC
+  - type: cards
+    name: Cards
+    coverProperty: cover
+    order:
+      - file.name
+      - created
+    sort:
+      - property: file.mtime
+        direction: DESC"
+,
+      ],
+    ],
+    "dom": {
+      "c": "",
+      "k": [
+        {
+          "c": "",
+          "k": [],
+          "t": "button",
+          "x": "Reset to default template",
+        },
+        {
+          "c": "setting-item-description",
+          "k": [],
+          "t": "p",
+          "x": "Open the command palette and search for 'Auto Categories' to access commands:",
+        },
+        {
+          "c": "",
+          "k": [
+            {
+              "c": "",
+              "k": [
+                {
+                  "c": "",
+                  "k": [],
+                  "t": "strong",
+                  "x": "Sync all categories",
+                },
+              ],
+              "t": "li",
+              "x": " - Process all notes in vault",
+            },
+            {
+              "c": "",
+              "k": [
+                {
+                  "c": "",
+                  "k": [],
+                  "t": "strong",
+                  "x": "Process current file categories",
+                },
+              ],
+              "t": "li",
+              "x": " - Process only the active note",
+            },
+            {
+              "c": "",
+              "k": [
+                {
+                  "c": "",
+                  "k": [],
+                  "t": "strong",
+                  "x": "Show categories overview",
+                },
+              ],
+              "t": "li",
+              "x": " - View all categories",
+            },
+            {
+              "c": "",
+              "k": [
+                {
+                  "c": "",
+                  "k": [],
+                  "t": "strong",
+                  "x": "Find orphan categories",
+                },
+              ],
+              "t": "li",
+              "x": " - Find unused categories",
+            },
+          ],
+          "t": "ul",
+          "x": "",
+        },
+      ],
+      "t": "div",
+      "x": "",
+    },
+    "reset": 
+"filters:
+  and:
+    "
+,
+    "shape": [
+      {
+        "c": [],
+        "d": undefined,
+        "h": true,
+        "n": "Folders",
+      },
+      {
+        "c": [
+          [
+            "text",
+            "Categories",
+            "Categories",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Folder where category pages are created",
+        "h": false,
+        "n": "Categories folder",
+      },
+      {
+        "c": [
+          [
+            "text",
+            "Templates/Bases",
+            "Templates/Bases",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Folder where base files are created",
+        "h": false,
+        "n": "Bases folder",
+      },
+      {
+        "c": [
+          [
+            "text",
+            "Templates, Archive",
+            "Templates",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Folders to exclude from processing (comma-separated)",
+        "h": false,
+        "n": "Exclude folders",
+      },
+      {
+        "c": [
+          [
+            "text",
+            "Notes/Categories, Projects",
+            "",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Additional folders to check for existing categories (comma-separated). Used to determine if a category already exists.",
+        "h": false,
+        "n": "Additional category check folders",
+      },
+      {
+        "c": [],
+        "d": undefined,
+        "h": true,
+        "n": "Behavior",
+      },
+      {
+        "c": [
+          [
+            "toggle",
+            undefined,
+            false,
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Automatically sync all categories when Obsidian starts",
+        "h": false,
+        "n": "Sync on startup",
+      },
+      {
+        "c": [
+          [
+            "toggle",
+            undefined,
+            true,
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Treat 'Urlaub' and 'urlaub' as different categories",
+        "h": false,
+        "n": "Case sensitive",
+      },
+      {
+        "c": [
+          [
+            "toggle",
+            undefined,
+            true,
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Show notices when categories are created",
+        "h": false,
+        "n": "Show notifications",
+      },
+      {
+        "c": [
+          [
+            "text",
+            " - ",
+            " - ",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Separator for nested categories (e.g., Travel/Europe becomes Travel - Europe)",
+        "h": false,
+        "n": "Nested category separator",
+      },
+      {
+        "c": [
+          [
+            "text",
+            "500",
+            "5",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Delay before processing changes to notes that are not open in the active editor. The note you are editing is processed when you leave it.",
+        "h": false,
+        "n": "Debounce delay (ms)",
+      },
+      {
+        "c": [],
+        "d": undefined,
+        "h": true,
+        "n": "Base template",
+      },
+      {
+        "c": [
+          [
+            "text",
+            "Templates/category-template.base",
+            "",
+            undefined,
+            undefined,
+          ],
+        ],
+        "d": "Path to a template file in your vault (e.g., Templates/category.base). If set, this file is used instead of the inline template below. Use {{categoryName}} as placeholder.",
+        "h": false,
+        "n": "Base template file path",
+      },
+      {
+        "c": [
+          [
+            "textarea",
+            
+"filters:
+  and:
+    - categories.contains(link("{{categoryName}}"))
+    - '!file.name.contains("Template")'
+properties:
+  file.name:
+    displayName: Name
+  created:
+    displayName: Created
+  file.ctime:
+    displayName: File Created
+  file.mtime:
+    displayName: Modified
+  tags:
+    displayName: Tags
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - created
+      - file.mtime
+      - tags
+    sort:
+      - property: file.mtime
+        direction: DESC
+  - type: cards
+    name: Cards
+    coverProperty: cover
+    order:
+      - file.name
+      - created
+    sort:
+      - property: file.mtime
+        direction: DESC"
+,
+            
+"filters:
+  and:
+    - categories.contains(link("{{categoryName}}"))
+    - '!file.name.contains("Template")'
+properties:
+  file.name:
+    displayName: Name
+  created:
+    displayName: Created
+  file.ctime:
+    displayName: File Created
+  file.mtime:
+    displayName: Modified
+  tags:
+    displayName: Tags
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - created
+      - file.mtime
+      - tags
+    sort:
+      - property: file.mtime
+        direction: DESC
+  - type: cards
+    name: Cards
+    coverProperty: cover
+    order:
+      - file.name
+      - created
+    sort:
+      - property: file.mtime
+        direction: DESC"
+,
+            15,
+            50,
+          ],
+        ],
+        "d": "Inline template for new .base files. Used when no template file path is set. Use {{categoryName}} as placeholder.",
+        "h": false,
+        "n": "Base file template (fallback)",
+      },
+      {
+        "c": [],
+        "d": undefined,
+        "h": true,
+        "n": "Commands",
+      },
+    ],
+  },
+  "trashed": [],
+  "vault": {
+    "/": "<folder>",
+    "Categories": "<folder>",
+    "Categories/Sub": "<folder>",
+    "Categories/Sub/Orphan.md": "x",
+    "Categories/Used.md": "x",
+    "Categories/orphan2.md": "x",
+    "Projects": "<folder>",
+    "Projects/Bar.md": "p",
+    "Projects/Unrelated.md": "u",
+    "Templates": "<folder>",
+    "Templates/Bases": "<folder>",
+    "Templates/Bases/Used.base": "link("Used")",
+    "Templates/t.md": 
+"---
+categories:
+  - Ignored
+---
+Body
+"
+,
+    "a.md": 
+"---
+categories:
+  - Books
+  - "[[Fiction|F]]"
+  - "[[A]], [[B]]"
+  - "Foo]"
+  - "[[Foo#Sec]]"
+  - Travel/Europe
+  - books
+  - "[[Categories/Used]]"
+  - "[[projects/Bar]]"
+  - "[[Unfinished"
+  -
+---
+Body
+"
+,
+    "b.md": 
+"---
+categories: Single
+---
+Body
+"
+,
+    "c.md": 
+"---
+categories:
+  - "[[Used]]"
+  - "[[Missing]]"
+---
+Body
+"
+,
+    "d.md": 
+"---
+x: 1
+---
+Body
+"
+,
+  },
+}
+`;

@@ -42,6 +42,18 @@
   margin-top: var(--size-4-3);
 }
 
+/* Rename Category Modal */
+.auto-categories-rename-input input {
+  width: 100%;
+}
+
+.auto-categories-rename-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-4);
+}
+
 /* Category item (interactive) */
 .auto-categories-item {
   cursor: context-menu;

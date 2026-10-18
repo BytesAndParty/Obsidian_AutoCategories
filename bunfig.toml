@@ -1,0 +1,4 @@
+[test]
+# Serve tests/mock/obsidian.js as the "obsidian" module
+preload = ["./tests/setup.js"]
+root = "./tests"

@@ -16,6 +16,9 @@ AutoCategories/
 ├── esbuild.config.mjs        # Build-Konfiguration
 ├── tsconfig.json             # TypeScript-Konfiguration
 ├── styles.css                # UI-Styling für Modals
+├── tests/                    # bun test: Obsidian-Mock (tests/mock), Testsuiten, Snapshots
+├── bunfig.toml               # bun-test-Konfiguration (Preload des Obsidian-Mocks)
+├── bun.lock                  # Lockfile (wird eingecheckt)
 ├── versions.json             # Versionskompatibilität
 ├── todo.md                   # Aktuelle TODOs
 └── README.md                 # Plugin-Dokumentation
@@ -43,6 +46,8 @@ AutoCategories/
 bun install
 bun run dev    # Watch mode
 bun run build  # Production build
+bun run test   # Tests gegen src/main.ts (bun test)
+bun run test:build  # Production build + Tests gegen main.js
 ```
 
 ## Plugin im Vault aktivieren

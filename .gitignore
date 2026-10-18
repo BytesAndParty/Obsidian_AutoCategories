@@ -6,7 +6,6 @@
 
 # Node
 node_modules/
-bun.lock
 
 # Build output
 main.js

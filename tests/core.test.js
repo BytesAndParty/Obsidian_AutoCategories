@@ -217,6 +217,47 @@ await runChecks("core", async (check) => {
     await quiet();
     check("rename case-only (case-insensitive mode)", ok && exists(v, "Categories/Foo.md") && exists(v, "Templates/Bases/Foo.base") && J(fmOf(app, "n.md").categories) === J(["[[Foo]]"]), { ok, k: keys(v), n: state.notices });
   }
+  // ---------- rename and concurrent processing ----------
+  {
+    // processFile already running (base file still being created) when the rename starts
+    const { plugin, v } = await setup(Plugin, {
+      "Categories/Old.md": "![[Old.base]]\n",
+      "b.md": note(`categories:\n  - "[[Old]]"\n`),
+    });
+    const [processed, renamed] = await Promise.all([plugin.processFile(v.getAbstractFileByPath("b.md")), plugin.renameCategory("Old", "New")]);
+    await quiet();
+    check("rename race: processing in flight finishes first, Old is not recreated", processed && renamed && !exists(v, "Categories/Old.md") && !exists(v, "Templates/Bases/Old.base") && exists(v, "Categories/New.md") && exists(v, "Templates/Bases/New.base"), keys(v));
+  }
+  {
+    // After the rename resolves, the metadata cache already shows the new name (no stale overview)
+    const { plugin } = await setup(Plugin, {
+      "Categories/Old.md": "![[Old.base]]\n", "Templates/Bases/Old.base": 'link("Old")',
+      "a.md": note(`categories:\n  - "[[Old]]"\n`), "b.md": note(`categories: Old\n`),
+    });
+    const start = Date.now();
+    const ok = await plugin.renameCategory("Old", "New");
+    const used = [...plugin.getAllUsedCategories()];
+    check("rename: used categories are up to date right after the rename", ok && J(used) === J(["New"]), used);
+    check("rename: waiting for the index does not hit the timeout", Date.now() - start < 1000, Date.now() - start);
+  }
+  {
+    const { plugin } = await setup(Plugin, {
+      "Categories/foo.md": "![[foo.base]]\n", "n.md": note(`categories:\n  - "[[foo]]"\n`),
+    }, { caseSensitive: false });
+    const start = Date.now();
+    const ok = await plugin.renameCategory("foo", "Foo");
+    check("rename case-only: no index timeout", ok && Date.now() - start < 1000 && J([...plugin.getAllUsedCategories()]) === J(["Foo"]), { ms: Date.now() - start, used: [...plugin.getAllUsedCategories()] });
+  }
+  {
+    // Two renames called at the same time run one after another
+    const { app, plugin, v } = await setup(Plugin, {
+      "Categories/Old.md": "![[Old.base]]\n", "Templates/Bases/Old.base": 'link("Old")',
+      "a.md": note(`categories:\n  - "[[Old]]"\n`),
+    });
+    const [r1, r2] = await Promise.all([plugin.renameCategory("Old", "Mid"), plugin.renameCategory("Mid", "New")]);
+    await quiet();
+    check("rename: concurrent renames are serialized", r1 && r2 && exists(v, "Categories/New.md") && !exists(v, "Categories/Mid.md") && !exists(v, "Categories/Old.md") && J(fmOf(app, "a.md").categories) === J(["[[New]]"]), { r1, r2, k: keys(v), fm: fmOf(app, "a.md").categories });
+  }
   // ---------- sync counts ----------
   {
     const { plugin } = await setup(Plugin, { "a.md": note(`categories: A\n`), "b.md": note(`categories:\n  - B\n  - A\n`), "c.md": note(`x: 1\n`) });

@@ -7,9 +7,12 @@ const J = JSON.stringify;
 async function deleteAllOrphans(plugin) {
   plugin.findOrphanCategories();
   const modal = lastModal();
-  const button = modal && modal.contentEl.findAll((e) => e.tag === "button" && /delete all/i.test(e.text))[0];
-  if (button) await button.onclick();
-  return modal ? modal.orphans.slice() : [];
+  const orphans = modal ? modal.orphans.slice() : [];
+  const buttons = modal ? modal.contentEl.findAll((e) => e.tag === "button") : [];
+  // "Delete all orphans" only exists for more than one orphan
+  const all = buttons.find((b) => /delete all/i.test(b.text));
+  for (const button of all ? [all] : buttons.filter((b) => b.text === "Delete")) await button.onclick();
+  return orphans;
 }
 
 await runChecks("paths", async (check) => {
@@ -119,16 +122,69 @@ await runChecks("paths", async (check) => {
     ]), results);
   }
 
-  // ---------------- Documented edge cases (edge.cjs) ----------------
+  // ---------------- deleteCategory and check folders ----------------
   {
-    // Open point: a base file is trashed although the category page lives in a check folder
-    const { plugin } = await setup(Plugin, { "Projects/Bar.md": "x", "Templates/Bases/Bar.base": "b" }, { categoryCheckFolders: ["Projects"] });
+    const { plugin, v } = await setup(Plugin, { "Projects/Bar.md": "x", "Templates/Bases/Bar.base": "b" }, { categoryCheckFolders: ["Projects"] });
     const r = await plugin.deleteCategory("Bar");
-    check("edge: deleteCategory with page in check folder only trashes the base file, never the note", r === true && J(state.trashed) === J(["Templates/Bases/Bar.base"]), { r, trashed: state.trashed });
+    check("delete: category whose page lives in a check folder is refused, nothing trashed", r === false && state.trashed.length === 0 && exists(v, "Projects/Bar.md") && exists(v, "Templates/Bases/Bar.base") && state.notices.some((n) => n.includes("Projects/Bar.md") && /not deleted/.test(n)), { r, trashed: state.trashed, n: state.notices });
   }
   {
-    // Open point: folder settings are compared case-sensitively
-    const { plugin } = await setup(Plugin, {}, { excludeFolders: ["templates"] });
-    check("edge: exclude folder 'templates' does not match 'Templates/' (case-sensitive)", plugin.shouldExcludeFile({ path: "Templates/x.md" }) === false);
+    // Only a base file left (page already gone): the base file is still cleaned up
+    const { plugin } = await setup(Plugin, { "Templates/Bases/Gone.base": "b" }, { categoryCheckFolders: ["Projects"] });
+    const r = await plugin.deleteCategory("Gone");
+    check("delete: base file without any page is trashed", r === true && J(state.trashed) === J(["Templates/Bases/Gone.base"]), { r, trashed: state.trashed });
+  }
+
+  // ---------------- Folder settings are compared case-insensitively ----------------
+  {
+    const { plugin, v } = await setup(Plugin, {
+      "Templates/t.md": note(`categories:\n  - InTemplate\n`),
+      "ÄRCHIV/old.md": note(`categories:\n  - InArchive\n`),
+      "a.md": note(`categories:\n  - Visible\n`),
+    }, { excludeFolders: ["templates", "ärchiv"] });
+    check("case: exclude 'templates' matches 'Templates/'", plugin.shouldExcludeFile(v.getAbstractFileByPath("Templates/t.md")) === true);
+    check("case: exclude 'ärchiv' matches 'ÄRCHIV/' (Unicode)", plugin.shouldExcludeFile(v.getAbstractFileByPath("ÄRCHIV/old.md")) === true);
+    check("case: 'Templates2/' is not inside 'templates'", plugin.shouldExcludeFile({ path: "Templates2/x.md" }) === false);
+    await plugin.syncAllCategories();
+    await quiet();
+    check("case: excluded notes are not processed", exists(v, "Categories/Visible.md") && !exists(v, "Categories/InTemplate.md") && !exists(v, "Categories/InArchive.md"), catFiles(v));
+  }
+  {
+    // Check folder written in another case: existing page found, never an orphan, never deleted
+    const { plugin, v } = await setup(Plugin, {
+      "Projects/Bar.md": "x", "Categories/Used.md": "x",
+      "a.md": note(`categories:\n  - "[[Bar]]"\n  - "[[PROJECTS/Bar]]"\n  - "[[Used]]"\n`),
+    }, { categoryCheckFolders: ["projects"] });
+    await plugin.processFile(v.getAbstractFileByPath("a.md"));
+    await quiet();
+    check("case: check folder 'projects' finds 'Projects/Bar.md' (no duplicate)", !exists(v, "Categories/Bar.md") && !exists(v, "Categories/PROJECTS - Bar.md"), catFiles(v));
+    const orphans = await deleteAllOrphans(plugin);
+    const r = await plugin.deleteCategory("Bar");
+    check("case: check-folder page in other case is never an orphan or deleted", orphans.length === 0 && r === false && state.trashed.length === 0 && exists(v, "Projects/Bar.md"), { orphans, r, trashed: state.trashed });
+  }
+  {
+    // Categories folder written in another case: pages go into the existing folder, no error, orphans work
+    const { plugin, v } = await setup(Plugin, {
+      "Categories/Old.md": "x",
+      "a.md": note(`categories:\n  - New\n`),
+    }, { categoriesFolder: "categories", basesFolder: "templates/bases" }, null);
+    v.seed("Templates/Bases/Old.base", "b");
+    await plugin.processFile(v.getAbstractFileByPath("a.md"));
+    await quiet();
+    check("case: categories folder 'categories' uses the existing 'Categories/' folder", exists(v, "Categories/New.md") && exists(v, "Templates/Bases/New.base") && !keys(v).some((k) => k.startsWith("categories") || k.startsWith("templates")), keys(v));
+    check("case: no error notices", !state.notices.some((n) => /error/i.test(n)), state.notices);
+    const orphans = await deleteAllOrphans(plugin);
+    check("case: orphan in 'Categories/' found and deleted with its base", J(orphans) === J(["Old"]) && J(state.trashed.sort()) === J(["Categories/Old.md", "Templates/Bases/Old.base"]), { orphans, trashed: state.trashed });
+  }
+  {
+    const { plugin } = await setup(Plugin, {}, {}, { categoryCheckFolders: ["Projects", "projects", "PROJECTS/", "Notes"], excludeFolders: ["Archive", "archive"] });
+    check("case: folder lists are deduplicated case-insensitively (first spelling kept)", J(plugin.settings.categoryCheckFolders) === J(["Projects", "Notes"]) && J(plugin.settings.excludeFolders) === J(["Archive"]), plugin.settings);
+  }
+  {
+    // Path link with a folder prefix in another case falls back to the folder-insensitive prefix strip
+    const { app, plugin, v } = await setup(Plugin, { "a.md": note(`categories:\n  - "[[CATEGORIES/Fresh]]"\n`) }, { categoriesFolder: "Categories" });
+    await plugin.processFile(v.getAbstractFileByPath("a.md"));
+    await quiet();
+    check("case: '[[CATEGORIES/Fresh]]' creates 'Fresh', link kept as written", exists(v, "Categories/Fresh.md") && J(fmOf(app, "a.md").categories) === J(["[[CATEGORIES/Fresh]]"]), { k: catFiles(v), fm: fmOf(app, "a.md").categories });
   }
 });

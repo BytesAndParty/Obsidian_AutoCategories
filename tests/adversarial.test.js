@@ -12,10 +12,6 @@ async function viaEvent(files, path, settings = {}, data = null) {
   return { ...ctx, settled, writes: writesOf(path), cats: fmOf(ctx.app, path)?.categories };
 }
 
-// Known open issue (see README of the tests / report): a debounced event for a note that still links
-// the old name can recreate the old category while a rename is running
-const KNOWN_FAILURES = ["7e Rename-Race"];
-
 await runChecks("adversarial", async (check) => {
   const info = () => {}; // informational output of the original script
 
@@ -260,4 +256,4 @@ await runChecks("adversarial", async (check) => {
     check("8d tiefe neue Ordner parallel angelegt, keine Fehler", exists(v, "X/Y/Cats/A.md") && exists(v, "Deep/Er/Bases/B.base") && errors().length === 0, { k: keys(v), e: errors() });
   }
 
-}, KNOWN_FAILURES);
+});

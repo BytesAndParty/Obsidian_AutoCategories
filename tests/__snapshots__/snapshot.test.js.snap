@@ -1454,7 +1454,7 @@ exports[`snapshot delete check-folder + missing + used 1`] = `
 {
   "modals": [],
   "notices": [
-    "Category "Bar" not found",
+    ""Projects/Bar.md" is outside the categories folder. The category is not deleted.",
     "Category "Nope" not found",
     "Deleted category: Used",
   ],

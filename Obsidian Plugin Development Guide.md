@@ -10,7 +10,7 @@ created: 2026-01-09
 
 # Obsidian Plugin Development Guide
 
-Anleitung zum Erstellen eines eigenen Obsidian Plugins fur Vault-Automationen.
+Anleitung zum Erstellen eines eigenen Obsidian Plugins für Vault-Automationen. Als Paketmanager und Skript-Runner wird [bun](https://bun.sh) verwendet.
 
 ---
 
@@ -42,14 +42,18 @@ obsidian-vault-automation/
 ```bash
 mkdir obsidian-vault-automation
 cd obsidian-vault-automation
-npm init -y
+bun init -y
+rm index.ts
+bun remove typescript
 ```
+
+`bun init -y` legt neben `package.json` auch `index.ts`, `tsconfig.json`, `README.md` und `.gitignore` an. `index.ts` wird nicht gebraucht (Entry Point ist `src/main.ts`), die `tsconfig.json` wird in Schritt 3 ersetzt. `bun init` trägt TypeScript als `peerDependency` in der neuesten Hauptversion ein; `bun remove typescript` entfernt diesen Eintrag, damit Schritt 2 TypeScript 5 als devDependency installiert. TypeScript ab Version 7 unterstützt `baseUrl` und `moduleResolution: "node"` aus Schritt 3 nicht mehr.
 
 ### 2. Dependencies installieren
 
 ```bash
-npm install --save-dev \
-  typescript \
+bun add -d \
+  typescript@5 \
   @types/node \
   obsidian \
   esbuild \
@@ -69,7 +73,7 @@ npm install --save-dev \
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "importHelpers": true,
+    "importHelpers": false,
     "isolatedModules": true,
     "strictNullChecks": true,
     "lib": ["DOM", "ES5", "ES6", "ES7"]
@@ -85,7 +89,7 @@ npm install --save-dev \
   "id": "vault-automation",
   "name": "Vault Automation",
   "version": "1.0.0",
-  "minAppVersion": "1.0.0",
+  "minAppVersion": "1.9.0",
   "description": "Automate vault operations: sync categories, publish notes",
   "author": "Your Name",
   "authorUrl": "https://github.com/yourusername",
@@ -403,8 +407,10 @@ views:
 ### 1. Build entwickeln
 
 ```bash
-npm run dev
+bun run dev
 ```
+
+`bun run dev` baut `main.js` einmal (ohne Watch-Modus). Ist Node.js nicht installiert, führt `bun run` das Skript `node esbuild.config.mjs` mit bun aus.
 
 ### 2. Plugin testen
 
@@ -415,10 +421,10 @@ npm run dev
 2. Obsidian: Settings → Community Plugins → Reload
 3. Aktiviere "Vault Automation"
 
-### 3. Hotlink fur Entwicklung (optional)
+### 3. Hotlink für Entwicklung (optional)
 
 ```bash
-# Symlink erstellen fur schnelleres Testen
+# Symlink erstellen für schnelleres Testen
 ln -s /path/to/obsidian-vault-automation/main.js \
       /path/to/vault/.obsidian/plugins/vault-automation/main.js
 ```
@@ -448,7 +454,7 @@ Nach der Installation erscheinen im Command Palette (`Cmd + P`):
 
 ---
 
-## Erweiterungsmoglichkeiten
+## Erweiterungsmöglichkeiten
 
 - **Settings Tab**: Konfigurierbare Ordnerpfade
 - **Ribbon Icon**: Button in der Sidebar

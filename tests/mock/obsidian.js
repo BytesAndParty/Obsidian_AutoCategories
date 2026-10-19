@@ -54,6 +54,7 @@ export class Vault {
     return [...this.entries.values()].map((e) => e.obj).filter((o) => o.path !== "/" && parentPath(o.path) === path);
   }
   getAbstractFileByPath(p) { const e = this.entries.get(p); return e ? e.obj : null; }
+  getRoot() { return this.entries.get("/").obj; }
   getFiles() { return [...this.entries.values()].map((e) => e.obj).filter((o) => o instanceof TFile); }
   getMarkdownFiles() { return this.getFiles().filter((o) => o.extension === "md"); }
   seed(path, content) {
@@ -117,6 +118,7 @@ export class Vault {
 export class MetadataCache {
   constructor(app) { this.app = app; this.cache = new Map(); this.handlers = []; this.delay = 2; }
   on(name, cb) { if (name === "changed") this.handlers.push(cb); return { name, cb }; }
+  offref(ref) { this.handlers = this.handlers.filter((h) => h !== ref.cb); }
   _update(file) {
     const content = this.app.vault.content(file.path);
     this.cache.set(file.path, content === undefined ? undefined : { frontmatter: parseFrontmatter(content) });
@@ -127,7 +129,7 @@ export class MetadataCache {
       if (!this.app.vault.getAbstractFileByPath(file.path)) return;
       this._update(file);
       state.events++;
-      for (const h of this.handlers) h(file, this.app.vault.content(file.path), this.cache.get(file.path));
+      for (const h of [...this.handlers]) h(file, this.app.vault.content(file.path), this.cache.get(file.path));
     }, this.delay);
   }
   getFileCache(file) {

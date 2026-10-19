@@ -4,6 +4,7 @@ import {
   PluginSettingTab,
   Setting,
   Notice,
+  TAbstractFile,
   TFile,
   TFolder,
   MarkdownView,
@@ -110,17 +111,29 @@ function normalizeUserPath(value: string): string {
 }
 
 /**
- * Normalize a list of folder paths and drop empty entries
+ * Key for comparing folder paths: folders are matched case-insensitively. NFC plus the
+ * locale-independent toLowerCase() gives the same result for every user locale.
  */
-function normalizeFolderList(folders: string[]): string[] {
-  return folders.map(normalizeUserPath).filter((folder) => folder.length > 0);
+function folderKey(path: string): string {
+  return path.normalize("NFC").toLowerCase();
 }
 
 /**
- * Check if a path lies inside a folder (including subfolders)
+ * Normalize a list of folder paths, drop empty entries and case-insensitive duplicates
+ */
+function normalizeFolderList(folders: string[]): string[] {
+  const result = new Map<string, string>();
+  for (const folder of folders.map(normalizeUserPath)) {
+    if (folder && !result.has(folderKey(folder))) result.set(folderKey(folder), folder);
+  }
+  return Array.from(result.values());
+}
+
+/**
+ * Check if a path lies inside a folder (including subfolders, case-insensitive)
  */
 function isInFolder(path: string, folder: string): boolean {
-  return !!folder && path.startsWith(folder + "/");
+  return !!folder && folderKey(path).startsWith(folderKey(folder) + "/");
 }
 
 export default class AutoCategoriesPlugin extends Plugin {
@@ -130,6 +143,10 @@ export default class AutoCategoriesPlugin extends Plugin {
   private pendingActiveFile: TFile | null = null;
   // Serializes category file creation (see ensureCategoryExists)
   private categoryQueue: Promise<void> = Promise.resolve();
+  // Running renames (see renameCategory); processing waits for them
+  private renaming: Promise<unknown> = Promise.resolve();
+  // processFile runs that passed the rename lock; a rename waits for them before it starts
+  private processing = new Set<Promise<boolean>>();
 
   async onload() {
     await this.loadSettings();
@@ -274,11 +291,33 @@ export default class AutoCategoriesPlugin extends Plugin {
   }
 
   private getCategoryPath(categoryName: string): string {
-    return `${this.settings.categoriesFolder}/${categoryName}.md`;
+    return `${this.resolveFolderPath(this.settings.categoriesFolder)}/${categoryName}.md`;
   }
 
   private getBasePath(categoryName: string): string {
-    return `${this.settings.basesFolder}/${categoryName}.base`;
+    return `${this.resolveFolderPath(this.settings.basesFolder)}/${categoryName}.base`;
+  }
+
+  /**
+   * The vault folder of a folder setting, matched case-insensitively per path segment
+   * (null for a missing folder and the vault root)
+   */
+  private getFolder(path: string): TFolder | null {
+    const exact = path ? this.app.vault.getAbstractFileByPath(path) : null;
+    if (exact instanceof TFolder) return exact.isRoot() ? null : exact;
+    let folder: TFolder | null = path ? this.app.vault.getRoot() : null;
+    for (const segment of path.split("/")) {
+      const children: TAbstractFile[] = folder ? folder.children : [];
+      folder = (children.find((c) => c instanceof TFolder && folderKey(c.name) === folderKey(segment)) as TFolder) ?? null;
+    }
+    return folder;
+  }
+
+  /**
+   * The path of the existing folder (in its actual spelling), or the setting if it does not exist yet
+   */
+  private resolveFolderPath(path: string): string {
+    return this.getFolder(path)?.path ?? path;
   }
 
   /**
@@ -361,15 +400,20 @@ export default class AutoCategoriesPlugin extends Plugin {
    * [[Categories/Category]] -> Category (longest matching folder, case-insensitive)
    */
   private stripFolderPrefix(name: string): string {
-    const lowerName = name.toLowerCase();
-    let prefixLength = 0;
+    // Compared per path segment, so the lower case of a character may have a different length
+    const segments = name.split("/");
+    let strip = 0;
     for (const folder of [this.settings.categoriesFolder, ...this.settings.categoryCheckFolders]) {
-      const prefix = folder.toLowerCase() + "/";
-      if (folder && prefix.length > prefixLength && lowerName.startsWith(prefix)) {
-        prefixLength = prefix.length;
+      const folderSegments = folder ? folder.split("/") : [];
+      if (
+        folderSegments.length > strip &&
+        folderSegments.length < segments.length &&
+        folderSegments.every((segment, i) => folderKey(segment) === folderKey(segments[i]))
+      ) {
+        strip = folderSegments.length;
       }
     }
-    return name.slice(prefixLength);
+    return segments.slice(strip).join("/");
   }
 
   /**
@@ -484,8 +528,20 @@ export default class AutoCategoriesPlugin extends Plugin {
 
   /**
    * Process a single file. Returns false if an error occurred.
+   * Waits for a running rename, so a note that still links the old name does not recreate it.
    */
   async processFile(file: TFile): Promise<boolean> {
+    await this.renaming;
+    const task = this.processFileNow(file);
+    this.processing.add(task);
+    try {
+      return await task;
+    } finally {
+      this.processing.delete(task);
+    }
+  }
+
+  private async processFileNow(file: TFile): Promise<boolean> {
     try {
       // The note may have been deleted meanwhile (debounce, note left after deleting it)
       if (!this.app.vault.getAbstractFileByPath(file.path)) return true;
@@ -579,7 +635,8 @@ tags:
     let currentPath = "";
 
     for (const part of folderPath.split("/")) {
-      currentPath = currentPath ? `${currentPath}/${part}` : part;
+      // An existing folder that differs only in case is reused
+      currentPath = this.resolveFolderPath(currentPath ? `${currentPath}/${part}` : part);
       if (!this.app.vault.getAbstractFileByPath(currentPath)) {
         try {
           await this.app.vault.createFolder(currentPath);
@@ -654,9 +711,9 @@ tags:
     // Main categories folder first, then additional category check folders
     const { categoriesFolder, categoryCheckFolders } = this.settings;
     for (const folderPath of includeCheckFolders ? [categoriesFolder, ...categoryCheckFolders] : [categoriesFolder]) {
-      const folder = folderPath && this.app.vault.getAbstractFileByPath(folderPath);
-      // Never scan the whole vault
-      if (folder instanceof TFolder && !folder.isRoot()) {
+      // Matched case-insensitively; never the vault root (getFolder returns null for it)
+      const folder = this.getFolder(folderPath);
+      if (folder) {
         processFolder(folder);
       }
     }
@@ -757,6 +814,12 @@ tags:
       // Only category pages inside the categories folder are deleted, never notes in check folders
       const found = this.findCategoryFile(categoryName, false);
       const categoryFile = found && isInFolder(found.path, this.settings.categoriesFolder) ? found : null;
+      // A category whose page lives in a check folder is still in use: keep its base file as well
+      const checkFolderPage = categoryFile ? null : this.findCategoryFile(categoryName);
+      if (checkFolderPage) {
+        new Notice(`"${checkFolderPage.path}" is outside the categories folder. The category is not deleted.`);
+        return false;
+      }
       const baseFile = this.app.vault.getAbstractFileByPath(
         this.getBasePath(categoryFile ? categoryFile.basename : categoryName)
       );
@@ -783,9 +846,60 @@ tags:
   }
 
   /**
-   * Rename a category
+   * Rename a category. Renames run one after another; processing that already started finishes
+   * first, processing that starts meanwhile waits until the rename is done.
    */
-  async renameCategory(oldName: string, newName: string): Promise<boolean> {
+  renameCategory(oldName: string, newName: string): Promise<boolean> {
+    const task = this.renaming.then(async () => {
+      await Promise.all(this.processing);
+      return this.renameCategoryNow(oldName, newName);
+    });
+    this.renaming = task.then(() => undefined, () => undefined);
+    return task;
+  }
+
+  /**
+   * Check if a note (according to the metadata cache) uses a category
+   */
+  private usesCategory(file: TFile, categoryName: string): boolean {
+    return this.normalizeCategories(this.getCachedCategories(file), file.path).names.some((name) =>
+      this.categoryNamesMatch(name, categoryName)
+    );
+  }
+
+  /**
+   * Resolves once the metadata cache has re-indexed every note that still showed the old name
+   * after a rename (or after a timeout, e.g. if such a note was not changed)
+   */
+  private waitForReindex(oldName: string, newName: string, timeoutMs = 2000): Promise<void> {
+    return new Promise((resolve) => {
+      const stale = new Set<string>();
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const done = () => {
+        this.app.metadataCache.offref(ref);
+        clearTimeout(timer);
+        resolve();
+      };
+      // Registered before the scan, so no re-index after the scan is missed
+      const ref = this.app.metadataCache.on("changed", (file: TFile) => {
+        if (stale.delete(file.path) && stale.size === 0) done();
+      });
+      for (const file of this.app.vault.getMarkdownFiles()) {
+        const names = this.normalizeCategories(this.getCachedCategories(file), file.path).names;
+        // A case-only rename ("foo" -> "Foo") still matches the old name in case-insensitive mode
+        if (names.some((name) => name !== newName && this.categoryNamesMatch(name, oldName))) {
+          stale.add(file.path);
+        }
+      }
+      if (stale.size === 0) {
+        done();
+      } else {
+        timer = setTimeout(done, timeoutMs);
+      }
+    });
+  }
+
+  private async renameCategoryNow(oldName: string, newName: string): Promise<boolean> {
     // Validate new name
     const validation = this.validateCategoryName(newName);
     if (!validation.valid || !validation.sanitized) {
@@ -858,10 +972,7 @@ tags:
 
       // 5. Update all notes that use this category
       for (const file of this.app.vault.getMarkdownFiles()) {
-        const hasOldCategory = this.normalizeCategories(this.getCachedCategories(file), file.path).names.some(
-          (categoryName) => this.categoryNamesMatch(categoryName, oldName)
-        );
-        if (!hasOldCategory) continue;
+        if (!this.usesCategory(file, oldName)) continue;
 
         // Replace the category in the frontmatter (plain text and wikilinks, keeps aliases)
         await this.app.fileManager.processFrontMatter(file, (fm) => {
@@ -894,7 +1005,10 @@ tags:
         });
       }
 
-      // 6. Refresh the active editor if it was affected (re-render by setting the same state)
+      // 6. Wait until the metadata cache shows the new name (processing waiting for the rename reads it)
+      await this.waitForReindex(oldName, newName);
+
+      // 7. Refresh the active editor if it was affected (re-render by setting the same state)
       const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (activeView?.file && this.app.metadataCache.getFileCache(activeView.file)?.frontmatter?.categories) {
         await activeView.setState(activeView.getState(), { history: false });
@@ -920,6 +1034,8 @@ tags:
    * Sync all categories across the vault
    */
   async syncAllCategories() {
+    // Count the categories after a running rename
+    await this.renaming;
     let processedCount = 0;
     let errorCount = 0;
     const allCategories = new Set<string>();
